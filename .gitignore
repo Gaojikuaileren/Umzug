@@ -1,0 +1,6 @@
+# 只发布脱敏网页。含真名 / 旧址的 md / xlsx / README、备份、临时文件一律留本地、绝不进 repo。
+# 白名单模式：默认忽略一切，只显式放行下面几个文件。
+/*
+!index.html
+!robots.txt
+!.gitignore

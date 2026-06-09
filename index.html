@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#2b302d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="搬家">
+<link rel="manifest" href='data:application/json,{"name":"搬家 Umzug","short_name":"搬家","display":"standalone","start_url":"./","background_color":"%23f6f4ef","theme_color":"%232b302d"}'>
+<title>搬家 · Umzug</title>
+<style>
+  :root{
+    --paper:#f6f4ef; --card:#fffdf8; --ink:#1f2421; --muted:#727a72;
+    --line:#e4dfd4; --line2:#efeae0; --head:#2b302d; --sub:#ece7dc;
+    --blue:#2f5ea8; --good:#3a5a40; --bad:#a3473b; --accent:#3a5a40;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#15181a; --card:#1f2426; --ink:#e9e7e1; --muted:#98a09a;
+      --line:#2f3638; --line2:#262c2e; --head:#0e1112; --sub:#222829;
+      --blue:#7aa2dd; --good:#8fbf9a; --bad:#d98a7e; --accent:#8fbf9a;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-variant-numeric:tabular-nums; line-height:1.5;
+    -webkit-font-smoothing:antialiased; padding:24px 16px 64px;
+  }
+  .wrap{max-width:880px;margin:0 auto}
+  header h1{font-size:24px;margin:0 0 2px;letter-spacing:.2px}
+  header .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+  .tab{
+    appearance:none;border:0;background:none;color:var(--muted);
+    font:inherit;font-size:15px;font-weight:600;padding:9px 16px;cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;border-radius:6px 6px 0 0;
+  }
+  .tab:hover{color:var(--ink)}
+  .tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+  section[hidden]{display:none}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .card .k{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .card .v{font-size:21px;font-weight:700;letter-spacing:.3px}
+  .card.limit{border-color:var(--accent)}
+  .card .limit-in{
+    width:100%;border:0;background:none;color:var(--ink);font:inherit;
+    font-size:21px;font-weight:700;padding:0;outline:none;
+  }
+  .pos{color:var(--bad)} .neg{color:var(--good)}
+  table{width:100%;border-collapse:collapse;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  thead th{background:var(--head);color:#fff;font-size:12px;font-weight:600;
+    text-align:right;padding:10px 12px;white-space:nowrap}
+  thead th:first-child{text-align:left}
+  tbody td{padding:9px 12px;border-top:1px solid var(--line2);text-align:right;vertical-align:top}
+  tbody td:first-child{text-align:left}
+  tr.grp td{background:var(--sub);font-weight:700;border-top:1px solid var(--line)}
+  tr.tot td{background:var(--head);color:#fff;font-weight:700;font-size:15px}
+  .pname{font-weight:500}
+  .note{display:block;color:var(--muted);font-size:11.5px;font-weight:400;margin-top:2px;max-width:46ch}
+  .num{
+    width:92px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--blue);
+    font:inherit;font-weight:600;text-align:right;padding:2px 2px;outline:none;
+  }
+  .num:focus{border-bottom-color:var(--accent)}
+  .num::-webkit-inner-spin-button,.num::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  .num[type=number]{-moz-appearance:textfield}
+  .eur{color:var(--muted);font-size:12px;margin-left:1px}
+  .diff{font-weight:600}
+  tbody td:nth-child(n+2){white-space:nowrap}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 16px 12px;margin-bottom:14px}
+  .phase h3{font-size:15px;margin:12px 0 8px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line2);cursor:pointer}
+  .chk:first-of-type{border-top:0}
+  .chk input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+  .chk span{font-size:14.5px}
+  .chk.done span{color:var(--muted);text-decoration:line-through}
+  .shopname{display:inline-flex;gap:8px;align-items:center;cursor:pointer;font-weight:500}
+  .shopname input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:0 0 auto}
+  tr.bought td{opacity:.5} tr.bought .pname{text-decoration:line-through}
+  .addr{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line2)}
+  .addr:first-of-type{border-top:0}
+  .st{appearance:none;border:1px solid var(--line);border-radius:20px;font:inherit;font-size:12px;font-weight:600;padding:5px 10px;cursor:pointer;flex:0 0 auto;min-width:96px;text-align:center}
+  .st0{color:var(--muted);background:none}
+  .st1{color:#fff;background:var(--blue);border-color:var(--blue)}
+  .st2{color:#fff;background:var(--good);border-color:var(--good)}
+  .aname{flex:1;font-size:14.5px}
+  .anote{flex:0 1 150px;min-width:0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:13px;padding:3px 4px;outline:none}
+  .anote:focus{border-bottom-color:var(--accent)}
+  .prog{font-size:12px;color:var(--muted);font-weight:400}
+  .foot{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    font:inherit;font-size:13px;padding:8px 16px;border-radius:9px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.ghost{color:var(--muted)}
+  .saved{font-size:12px;color:var(--muted);margin-left:auto;opacity:0;transition:opacity .3s}
+  .saved.show{opacity:1}
+  .pt{font-size:0;height:0;margin:0;overflow:hidden}
+  @media (max-width:560px){
+    body{padding:14px 10px 56px}
+    header h1{font-size:21px}
+    .tabs{gap:2px;overflow-x:auto;flex-wrap:nowrap}
+    .tab{padding:8px 11px;font-size:14px;white-space:nowrap}
+    .cards{grid-template-columns:1fr 1fr;gap:8px}
+    table, thead, tbody, tr, td{display:block;width:100%}
+    thead{display:none}
+    tbody tr{border-top:1px solid var(--line);padding:7px 12px}
+    tr.grp td{padding:6px 12px;font-size:15px}
+    tr.grp td:nth-child(n+2){display:none}
+    tr.tot{display:none}
+    tbody td{border:0;text-align:left;padding:2px 0;white-space:normal}
+    tbody td:nth-child(n+2){white-space:normal}
+    #budgetBody tr:not(.grp):not(.tot) td:nth-child(2)::before{content:"预估 ";color:var(--muted);font-size:12px}
+    #budgetBody tr:not(.grp):not(.tot) td:nth-child(3)::before{content:"实际 ";color:var(--muted);font-size:12px}
+    #budgetBody tr:not(.grp):not(.tot) td:nth-child(4)::before{content:"差额 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot) td:nth-child(2)::before{content:"数量 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot) td:nth-child(3)::before{content:"估价 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot) td:nth-child(4)::before{content:"实际 ";color:var(--muted);font-size:12px}
+    .num{width:auto;min-width:96px;font-size:16px}
+    .addr{flex-wrap:wrap;gap:8px}
+    .st{order:1}
+    .aname{flex:1 1 55%;order:2}
+    .anote{flex:1 1 100%;order:3;margin-left:0}
+  }
+  @media print{
+    .tabs,.foot{display:none} section[hidden]{display:block!important}
+    body{padding:0} .num{border:0}
+    .card,table,.phase{break-inside:avoid}
+    .pt{font-size:18px;height:auto;margin:18px 0 10px;overflow:visible}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🚚 搬家 · Umzug</h1>
+    <div class="sub">Köln → Düsseldorf　·　搬家筹备 Umzug</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="budget">💶 预算</button>
+    <button class="tab" data-tab="tasks">✅ 清单 <span class="prog" id="allprog"></span></button>
+    <button class="tab" data-tab="shop">🛠 翻新采购 <span class="prog" id="shopprog"></span></button>
+    <button class="tab" data-tab="address">📮 地址 <span class="prog" id="addrprog"></span></button>
+  </div>
+
+  <section id="budget">
+    <h2 class="pt">预算 Budget</h2>
+    <div class="cards">
+      <div class="card limit">
+        <div class="k">预算上限 Limit</div>
+        <input class="limit-in" id="limit" type="number" inputmode="decimal" placeholder="—" min="0">
+      </div>
+      <div class="card"><div class="k">总预估 Schätzung</div><div class="v" id="ov_est">–</div></div>
+      <div class="card"><div class="k">总实际 Ist</div><div class="v" id="ov_act">–</div></div>
+      <div class="card"><div class="k">差额 Ist−Soll</div><div class="v diff" id="ov_diff">–</div></div>
+      <div class="card"><div class="k">余量 Rest</div><div class="v diff" id="ov_rest">–</div></div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>项目 Posten</th><th>预估 €</th><th>实际 €</th><th>差额 €</th>
+      </tr></thead>
+      <tbody id="budgetBody"></tbody>
+    </table>
+  </section>
+
+  <section id="tasks" hidden>
+    <h2 class="pt">事务清单 Checkliste</h2>
+    <div id="tasksBody"></div>
+  </section>
+
+  <section id="shop" hidden>
+    <h2 class="pt">翻新采购 Einkaufsliste</h2>
+    <div class="cards">
+      <div class="card"><div class="k">采购预估 Schätzung</div><div class="v" id="shop_range">–</div></div>
+      <div class="card"><div class="k">已填实际 Ist</div><div class="v" id="shop_act">–</div></div>
+      <div class="card"><div class="k">已买 / 共</div><div class="v" id="shop_count">–</div></div>
+    </div>
+    <table>
+      <thead><tr><th>物品 Artikel</th><th>数量</th><th>估价 €</th><th>实际 €</th></tr></thead>
+      <tbody id="shopBody"></tbody>
+    </table>
+  </section>
+
+  <section id="address" hidden>
+    <h2 class="pt">地址变更 Adressänderung</h2>
+    <div class="cards">
+      <div class="card"><div class="k">已确认 Bestätigt</div><div class="v" id="addr_done">–</div></div>
+      <div class="card"><div class="k">办理中 Eingereicht</div><div class="v" id="addr_sent">–</div></div>
+      <div class="card"><div class="k">共 Gesamt</div><div class="v" id="addr_total">–</div></div>
+    </div>
+    <div id="addressBody"></div>
+    <p class="note" style="margin:10px 2px 0">点状态按钮循环：未办 → 已提交 → 已确认。右侧可记客户号 / 办理日（只存本地）。</p>
+  </section>
+
+  <div class="foot">
+    <button class="btn" onclick="window.print()">🖨 打印 / 存 PDF</button>
+    <button class="btn" id="exportBtn">📤 导出</button>
+    <button class="btn" id="importBtn">📥 导入</button>
+    <button class="btn ghost" id="reset">清空</button>
+    <span class="saved" id="saved">已自动保存</span>
+  </div>
+</div>
+
+<script>
+const BUDGET = [
+  {t:"① 押金・合同  Kaution & Vertrag", items:[
+    {n:"新居押金 Kaution", note:"通常 3 个月 Kaltmiete，可用 Bürgschaft 替代现金"},
+    {n:"首月租金 Erste Miete", note:"起租日起算"},
+    {n:"中介费 Provision", note:"租房通常无；经 Makler 才有"},
+  ]},
+  {t:"② 搬运  Transport", items:[
+    {n:"搬家公司 / 租车 Umzug/Transporter", note:"夫妻二人量不大，租车 + 帮手常更省"},
+    {n:"油费 / 公里 Sprit & km", note:""},
+    {n:"帮手 Helfer", note:"朋友餐费 or 临时工"},
+    {n:"搬家保险 Transportversicherung", note:"贵重物品建议"},
+  ]},
+  {t:"③ 打包材料  Packmaterial", items:[
+    {n:"纸箱 Umzugskartons", note:"买 / 租，或超市要空箱"},
+    {n:"打包材料", note:"气泡膜 / 胶带 / 标签 / 保护"},
+  ]},
+  {t:"④ 旧居收尾 Köln  Auszug", items:[
+    {n:"清洁 Endreinigung", note:""},
+    {n:"粉刷 Schönheitsreparaturen", note:"看合同是否要求，存疑问 Mieterverein"},
+    {n:"大件垃圾 Sperrmüll", note:"Köln 市政预约"},
+  ]},
+  {t:"⑤ 新居开通 Düsseldorf  Einzug", items:[
+    {n:"电 / 气 Strom & Gas", note:"登记或押金"},
+    {n:"网络新装 Internet-Anschluss", note:"提前 2–6 周约；可能有装机费"},
+    {n:"家具 / 家电补充 Möbel", note:"新居缺的"},
+  ]},
+  {t:"⑥ 行政  Behörden", items:[
+    {n:"门口禁停区 Halteverbotszone", note:"两地可能各一份"},
+    {n:"邮局转信 Nachsendeauftrag", note:"Deutsche Post，6/12 个月"},
+  ]},
+  {t:"⑦ 重叠・备用  Puffer", items:[
+    {n:"双租金重叠期 Doppelmiete", note:"旧未退 + 新已起租的月份"},
+    {n:"双水电重叠", note:""},
+    {n:"备用金 Puffer", note:"建议留总额 10–15%"},
+  ]},
+  {t:"⑧ 搬家后购置 Nachkauf", items:[
+    {n:"自行车 Fahrrad", note:"参考 ~450€"},
+    {n:"枕头 Kissen", note:"参考 ~300€"},
+    {n:"小型空调 Klimagerät", note:"参考 ~400€"},
+    {n:"打印机（带扫描）Multifunktionsdrucker", note:"参考 ~500€"},
+  ]},
+];
+
+const TASKS = [
+  {t:"① 退租旧居 Köln", items:[
+    "确认 Kündigungsfrist（标准 3 个月，查最短租期 / Staffel）",
+    "写退租信，Einschreiben 挂号寄出、留回执",
+    "收到房东 Kündigungsbestätigung",
+    "约定交房日 Übergabetermin",
+    "交房 Übergabeprotokoll + 拍照存证（墙面/地板/设备）",
+    "抄表 Zählerstände 电 / 气 / 水 + 拍照记日期",
+    "归还全部钥匙、记清数量",
+    "确认 Kaution 押金退还时间与金额",
+    "看合同是否要求粉刷 Schönheitsreparaturen",
+    "Strom / Gas 退订（报最终抄表数 + 搬出日）",
+  ]},
+  {t:"② 新居与搬入 Düsseldorf", items:[
+    "签约前核对 Kaltmiete / Nebenkosten / Kaution / 起租日",
+    "付 Kaution（或 Mietkautionsbürgschaft 担保）",
+    "拿到 Wohnungsgeberbestätigung（Anmeldung 必需）",
+    "入住 Übergabe：Protokoll + 抄表",
+    "登记新居 Strom / Gas（报抄表数 + 起始日）",
+    "⚠️ 提前 2–6 周预约 Internet 新装",
+    "搬家方案比价：搬家公司 vs 自己租车",
+    "取 3 份搬家公司报价对比",
+    "备 Umzugskartons 纸箱",
+    "申请 Halteverbotszone 禁停区（两地，提前 ~2 周）",
+    "预约 Sperrmüll 大件垃圾",
+    "通知 Hausverwaltung / 邻居 / 停车位",
+  ]},
+  {t:"③ 登记 Anmeldung", items:[
+    "在线预约 Bürgeramt Termin（入住前就约）",
+    "备 Anmeldung 材料：两人护照 + 居留、Wohnungsgeberbestätigung、表格",
+    "搬入后 14 天内办 Anmeldung，领 Meldebescheinigung",
+    "Nachsendeauftrag 邮局转信（搬家前生效）",
+    "找新的 Hausarzt 家庭医生",
+    "（各类地址变更见下方「📮 地址」板块）",
+  ]},
+  {t:"④ 费用与抵税", items:[
+    "留好所有搬家单据（公司 / 租车 / 纸箱 / 禁停区…）",
+    "判断搬家性质：职业原因 vs 私人原因",
+    "找 Steuerberater 确认可抵范围",
+  ]},
+  {t:"⑤ 翻新施工 DIY", items:[
+    "旧家：补钉子洞 / 膨胀管小洞（Spachtel）",
+    "旧家：修补水泥墙钻坏处（Tiefenfüller，深处别只用表面腻子）",
+    "旧家：刷墙恢复白墙（交房）",
+    "旧家：安装烟雾报警器 Rauchmelder",
+    "新家：刷新墙",
+  ]},
+];
+
+const LS = "umzug_v1";
+function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
+let state = load();
+state.b = state.b || {};
+state.t = state.t || {};
+
+const eur = new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
+const fmt = n => n ? eur.format(n) : "–";
+const toNum = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
+const $ = s => document.querySelector(s);
+const el = id => document.getElementById(id);
+
+let savedTimer;
+function flashSaved(){
+  const s = el("saved"); s.classList.add("show");
+  clearTimeout(savedTimer); savedTimer = setTimeout(()=>s.classList.remove("show"), 1200);
+}
+function save(){ localStorage.setItem(LS, JSON.stringify(state)); flashSaved(); }
+
+function paintDiff(node, n, active){
+  node.textContent = active ? fmt(n) : "–";
+  node.classList.remove("pos","neg");
+  if(active && n>0) node.classList.add("pos");   // 实际>预估 = 超支 = 红
+  else if(active && n<0) node.classList.add("neg"); // 省了 = 绿
+}
+
+function renderBudget(){
+  let h = "";
+  BUDGET.forEach((g, gi)=>{
+    h += `<tr class="grp"><td>${g.t}</td>`
+       + `<td id="se_${gi}">–</td><td id="sa_${gi}">–</td><td id="sd_${gi}" class="diff">–</td></tr>`;
+    g.items.forEach((it, ii)=>{
+      const key = gi+"_"+ii, v = state.b[key] || {};
+      const note = it.note ? `<span class="note">${it.note}</span>` : "";
+      h += `<tr><td><span class="pname">${it.n}</span>${note}</td>`
+         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="est" value="${v.est ?? ""}" placeholder="0"><span class="eur">€</span></td>`
+         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="act" value="${v.act ?? ""}" placeholder="0"><span class="eur">€</span></td>`
+         + `<td id="d_${key}" class="diff">–</td></tr>`;
+    });
+  });
+  h += `<tr class="tot"><td>合计 Gesamt</td>`
+     + `<td id="tot_est">–</td><td id="tot_act">–</td><td id="tot_diff" class="diff">–</td></tr>`;
+  el("budgetBody").innerHTML = h;
+}
+
+function compute(){
+  let totEst = 0, totAct = 0;
+  BUDGET.forEach((g, gi)=>{
+    let ge = 0, ga = 0;
+    g.items.forEach((it, ii)=>{
+      const key = gi+"_"+ii, v = state.b[key] || {};
+      const e = toNum(v.est), a = toNum(v.act);
+      ge += e; ga += a;
+      paintDiff(el("d_"+key), a-e, !!(e||a));
+    });
+    el("se_"+gi).textContent = fmt(ge);
+    el("sa_"+gi).textContent = fmt(ga);
+    paintDiff(el("sd_"+gi), ga-ge, !!(ge||ga));
+    totEst += ge; totAct += ga;
+  });
+  el("tot_est").textContent = fmt(totEst);
+  el("tot_act").textContent = fmt(totAct);
+  paintDiff(el("tot_diff"), totAct-totEst, !!(totEst||totAct));
+
+  el("ov_est").textContent = fmt(totEst);
+  el("ov_act").textContent = fmt(totAct);
+  paintDiff(el("ov_diff"), totAct-totEst, !!(totEst||totAct));
+
+  const limit = toNum(state.limit), rest = limit - totEst;
+  const r = el("ov_rest");
+  r.textContent = limit ? fmt(rest) : "–";
+  r.classList.remove("pos","neg");
+  if(limit && rest<0) r.classList.add("pos");      // 超预算 = 红
+  else if(limit && rest>0) r.classList.add("neg"); // 有余量 = 绿
+}
+
+function renderTasks(){
+  let h = "";
+  TASKS.forEach((p, pi)=>{
+    let rows = "";
+    p.items.forEach((txt, ii)=>{
+      const key = pi+"_"+ii, on = !!state.t[key];
+      rows += `<label class="chk${on?" done":""}"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span>${txt}</span></label>`;
+    });
+    h += `<div class="phase"><h3>${p.t} <span class="prog" id="pp_${pi}"></span></h3>${rows}</div>`;
+  });
+  el("tasksBody").innerHTML = h;
+  updateProgress();
+}
+
+function updateProgress(){
+  let done = 0, total = 0;
+  TASKS.forEach((p, pi)=>{
+    let pd = 0;
+    p.items.forEach((_, ii)=>{ total++; if(state.t[pi+"_"+ii]){ pd++; done++; } });
+    const e = el("pp_"+pi); if(e) e.textContent = `${pd}/${p.items.length}`;
+  });
+  el("allprog").textContent = `${done}/${total}`;
+}
+
+// ---- events ----
+el("budgetBody").addEventListener("input", e=>{
+  const inp = e.target.closest(".num"); if(!inp) return;
+  const key = inp.dataset.key, f = inp.dataset.f;
+  state.b[key] = state.b[key] || {};
+  state.b[key][f] = inp.value;
+  save(); compute();
+});
+el("limit").addEventListener("input", e=>{ state.limit = e.target.value; save(); compute(); });
+el("tasksBody").addEventListener("change", e=>{
+  const cb = e.target.closest("input[type=checkbox]"); if(!cb) return;
+  const key = cb.dataset.key;
+  if(cb.checked) state.t[key] = true; else delete state.t[key];
+  cb.closest(".chk").classList.toggle("done", cb.checked);
+  save(); updateProgress();
+});
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on");
+  const tab = t.dataset.tab;
+  el("budget").hidden = tab !== "budget";
+  el("tasks").hidden  = tab !== "tasks";
+}));
+el("reset").addEventListener("click", ()=>{
+  if(confirm("确定清空所有已填的预算和勾选？此操作不可撤销。")){
+    localStorage.removeItem(LS); location.reload();
+  }
+});
+
+// ---- init ----
+el("limit").value = state.limit || "";
+renderBudget();
+renderTasks();
+compute();
+</script>
+
+<script>
+// ===== 翻新采购 Einkaufsliste =====
+const SHOP = [
+  {t:"洗手池修补 Waschbecken", items:[
+    {n:"陶瓷裂痕修补套装", de:"Keramik-/Emaille-/Sanitär-Reparaturset", use:"修补裂痕、崩瓷、划痕", qty:"1 套", lo:7, hi:35, note:"Bauhaus Küche&Bad Set，用于 Keramik/Acryl/Email；高端到 ~60€"},
+    {n:"陶瓷补漆笔", de:"Reparatur-Lackstift / Emaille-Fix", use:"小裂纹、划痕、白色补色", qty:"1 支", lo:6, hi:10, note:"OBI Wenko Emaille-Fix 20ml ~6.49€；Pattex 30 分钟后防水"},
+    {n:"脱脂清洁剂", de:"Silikonentferner / Alkoholreiniger", use:"修补前去油、去皂垢", qty:"1 瓶", lo:4, hi:10, note:"不清洁会导致补漆不附着"},
+  ]},
+  {t:"刷漆工具 Werkzeug", items:[
+    {n:"滚筒刷", de:"Farbroller / Malerrolle", use:"大面积刷墙", qty:"2 个大滚筒", lo:8, hi:25, note:"两种漆最好分开用"},
+    {n:"伸缩滚筒杆", de:"Teleskopstange", use:"高处刷墙，少爬梯", qty:"1", lo:8, hi:25, note:""},
+    {n:"漆盘", de:"Farbwanne", use:"倒漆、蘸小滚筒", qty:"1–2 个", lo:3, hi:10, note:""},
+    {n:"刮漆网", de:"Abstreifgitter", use:"刮掉多余墙漆", qty:"1", lo:3, hi:5, note:"OBI LUX ~2.99€"},
+  ]},
+  {t:"墙漆・腻子・遮蔽 Farbe & Zubehör", items:[
+    {n:"旧家墙漆（白）", de:"Innenwandfarbe / Dispersionsfarbe Weiß", use:"交房恢复白墙、遮盖脏污补洞", qty:"2 × 10L", lo:24, hi:70, note:"OBI Easyweiss 10L ~31.99€；便宜 CMI ~11.99€（遮盖手感差些）"},
+    {n:"新家墙漆（高级白）", de:"Premium Innenfarbe Weiß", use:"自住房，更白更匀、少飞溅、遮盖好", qty:"1–2 × 10L", lo:53, hi:120, note:"Bauhaus Alpinaweiß Premium 10L ~52.95€；matt/hochdeckend"},
+    {n:"小洞修补腻子", de:"Innen-Fertigspachtel / Moltofill", use:"补 ~30 个钉子洞、膨胀管小洞、小裂缝", qty:"1–2 × 330g", lo:5, hi:12, note:"OBI Moltofill 330g 适合室内小修补"},
+    {n:"深洞/水泥墙修补", de:"Reparaturspachtel / Tiefenfüller", use:"补钻坏的水泥墙 ~10cm²", qty:"1 支/盒", lo:6, hi:15, note:"选可用于 Putz/Beton/Zement/Mauerwerk 的"},
+    {n:"底漆 Tiefengrund", de:"Tiefengrund", use:"修补处、粉化墙、吸水强的墙先刷，避免色差发花", qty:"1L 局部；整墙粉化 5L", lo:9, hi:32, note:"Bauhaus 1L ~8.85–11.45€，5L ~16.30–33.90€"},
+    {n:"美纹纸/遮蔽胶带", de:"Malerkrepp / Malerband", use:"贴踢脚线、门框、插座、窗框边", qty:"4–6 卷", lo:20, hi:40, note:"Nopi 30mm×50m ~5.99€；50mm×50m ~8.59€"},
+    {n:"带胶遮蔽膜", de:"Abdeckfolie mit Klebeband", use:"保护门窗、暖气片、固定家具边", qty:"2–3 卷", lo:15, hi:30, note:"OBI 550mm×25m ~7.29€"},
+    {n:"地面保护毡", de:"Abdeckvlies / Malervlies", use:"保护地板，比塑料膜稳、不滑不破", qty:"1×50m 或 3–5×10m", lo:45, hi:70, note:"OBI LUX 1m×50m ~46.99€；10m ~14.39€"},
+    {n:"塑料保护膜", de:"Abdeckfolie / Baufolie", use:"盖家具、临时保护大件", qty:"1–2 包", lo:5, hi:15, note:"不建议长期踩"},
+  ]},
+];
+
+state.sb = state.sb || {};
+state.sv = state.sv || {};
+
+function renderShop(){
+  let h = "";
+  SHOP.forEach((g, gi)=>{
+    h += `<tr class="grp"><td>${g.t}</td><td></td><td id="sr_${gi}"></td><td></td></tr>`;
+    g.items.forEach((it, ii)=>{
+      const key = gi+"_"+ii, on = !!state.sb[key], v = state.sv[key] ?? "";
+      const meta = [it.de, it.use, it.note].filter(Boolean).join("　·　");
+      const price = it.lo===it.hi ? it.lo+" €" : it.lo+"–"+it.hi+" €";
+      h += `<tr${on?' class="bought"':''}>`
+         + `<td><label class="shopname"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span class="pname">${it.n}</span></label><span class="note">${meta}</span></td>`
+         + `<td>${it.qty}</td><td>${price}</td>`
+         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" value="${v}" placeholder="0"><span class="eur">€</span></td></tr>`;
+    });
+  });
+  h += `<tr class="tot"><td>合计 Gesamt</td><td></td><td id="shop_totrange"></td><td id="shop_totact">–</td></tr>`;
+  el("shopBody").innerHTML = h;
+}
+
+function computeShop(){
+  let lo=0, hi=0, act=0, bought=0, total=0;
+  SHOP.forEach((g, gi)=>{
+    let glo=0, ghi=0;
+    g.items.forEach((it, ii)=>{
+      const key = gi+"_"+ii;
+      glo += it.lo; ghi += it.hi; lo += it.lo; hi += it.hi;
+      act += toNum(state.sv[key]);
+      total++; if(state.sb[key]) bought++;
+    });
+    const sr = el("sr_"+gi); if(sr) sr.textContent = glo+"–"+ghi+" €";
+  });
+  const range = lo+"–"+hi+" €";
+  el("shop_totrange").textContent = range;
+  el("shop_range").textContent = range;
+  el("shop_totact").textContent = act ? eur.format(act) : "–";
+  el("shop_act").textContent = act ? eur.format(act) : "–";
+  el("shop_count").textContent = bought+" / "+total;
+  el("shopprog").textContent = bought+"/"+total;
+}
+
+el("shopBody").addEventListener("change", e=>{
+  const cb = e.target.closest('input[type=checkbox]'); if(!cb) return;
+  const key = cb.dataset.key;
+  if(cb.checked) state.sb[key]=true; else delete state.sb[key];
+  const tr = cb.closest("tr"); if(tr) tr.classList.toggle("bought", cb.checked);
+  save(); computeShop();
+});
+el("shopBody").addEventListener("input", e=>{
+  const inp = e.target.closest(".num"); if(!inp) return;
+  state.sv[inp.dataset.key] = inp.value;
+  save(); computeShop();
+});
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+  el("shop").hidden = t.dataset.tab !== "shop";
+}));
+
+renderShop();
+computeShop();
+</script>
+
+<script>
+// ===== 地址变更 Adressänderung =====
+const ADDRESS = [
+  {t:"法定・合约 Behörden & Verträge", items:[
+    {n:"报税局 Finanzamt", note:"自雇管辖可能转杜塞"},
+    {n:"电视费 Rundfunkbeitrag", note:"夫妻只交一份"},
+    {n:"银行 Bank", note:""},
+    {n:"保险 Versicherung", note:"Haftpflicht / Hausrat / Kranken"},
+    {n:"水电网 Strom/Gas/Wasser/Internet", note:""},
+    {n:"德铁 DB / Bahn", note:"Bahncard / 账户"},
+  ]},
+  {t:"金融・支付 Zahlung", items:[
+    {n:"PayPal", note:""},
+    {n:"Wise", note:""},
+    {n:"fintiba", note:""},
+    {n:"发票地址 Rechnungsadresse", note:"自由职业开票"},
+    {n:"自动扣款 Lastschrift / SEPA", note:"各 Abo 扣款地址"},
+    {n:"Google 账单地址", note:""},
+    {n:"Vercel 域名账单", note:""},
+  ]},
+  {t:"服务・电商 Dienste & Shops", items:[
+    {n:"o2", note:"手机 / 网络"},
+    {n:"Amazon 亚马逊", note:""},
+    {n:"joybuy", note:""},
+    {n:"wolt", note:""},
+    {n:"Google Maps", note:"家 / 公司标记"},
+    {n:"check24", note:""},
+  ]},
+];
+const ST_LABEL = ["未办 Offen", "已提交 Eingereicht", "已确认 Bestätigt"];
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+state.a = state.a || {};
+state.an = state.an || {};
+
+function renderAddress(){
+  let h = "";
+  ADDRESS.forEach((g, gi)=>{
+    let rows = "";
+    g.items.forEach((it, ii)=>{
+      const key = gi+"_"+ii, s = state.a[key] || 0, nt = state.an[key] ?? "";
+      const note = it.note ? `<span class="note">${it.note}</span>` : "";
+      rows += `<div class="addr"><button class="st st${s}" data-key="${key}">${ST_LABEL[s]}</button>`
+            + `<span class="aname">${it.n}${note}</span>`
+            + `<input class="anote" data-key="${key}" value="${esc(nt)}" placeholder="客户号 / 办理日…"></div>`;
+    });
+    h += `<div class="phase"><h3>${g.t} <span class="prog" id="ap_${gi}"></span></h3>${rows}</div>`;
+  });
+  el("addressBody").innerHTML = h;
+}
+
+function computeAddress(){
+  let done=0, sent=0, total=0;
+  ADDRESS.forEach((g, gi)=>{
+    let gd=0;
+    g.items.forEach((_, ii)=>{
+      const s = state.a[gi+"_"+ii] || 0;
+      total++; if(s===2){done++;gd++;} else if(s===1) sent++;
+    });
+    const e = el("ap_"+gi); if(e) e.textContent = gd+"/"+g.items.length;
+  });
+  el("addr_done").textContent = done;
+  el("addr_sent").textContent = sent;
+  el("addr_total").textContent = total;
+  el("addrprog").textContent = done+"/"+total;
+}
+
+el("addressBody").addEventListener("click", e=>{
+  const b = e.target.closest(".st"); if(!b) return;
+  const key = b.dataset.key, s = ((state.a[key]||0)+1)%3;
+  if(s) state.a[key]=s; else delete state.a[key];
+  b.className = "st st"+s; b.textContent = ST_LABEL[s];
+  save(); computeAddress();
+});
+el("addressBody").addEventListener("input", e=>{
+  const inp = e.target.closest(".anote"); if(!inp) return;
+  const key = inp.dataset.key;
+  if(inp.value) state.an[key]=inp.value; else delete state.an[key];
+  save();
+});
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+  el("address").hidden = t.dataset.tab !== "address";
+}));
+
+renderAddress();
+computeAddress();
+
+// ===== 导出 / 导入（跨设备同步 + 备份）=====
+function exportData(){
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code)
+      .then(()=>alert("✅ 导出码已复制到剪贴板（"+code.length+" 字符）。\n粘到另一台设备点「导入」，或发给自己 / 存进备份。"))
+      .catch(()=>prompt("复制下面的导出码：", code));
+  } else {
+    prompt("复制下面的导出码：", code);
+  }
+}
+function importData(){
+  const code = prompt("粘贴导出码（导入会覆盖本机当前数据）：");
+  if(!code) return;
+  try{
+    const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+    if(typeof obj !== "object" || !obj) throw 0;
+    localStorage.setItem(LS, JSON.stringify(obj));
+    location.reload();
+  }catch(e){ alert("❌ 导入码无效，请检查是否复制完整。"); }
+}
+el("exportBtn").addEventListener("click", exportData);
+el("importBtn").addEventListener("click", importData);
+</script>
+</body>
+</html>
