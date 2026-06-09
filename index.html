@@ -131,12 +131,12 @@
     #shopBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(3)::before{content:"估价 ";color:var(--muted);font-size:12px}
     #shopBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(4)::before{content:"实际 ";color:var(--muted);font-size:12px}
     .num{width:auto;min-width:96px;font-size:16px}
-    .del{font-size:22px;padding:2px 10px;opacity:.7}
+    .del{font-size:22px;padding:8px 12px;min-width:44px;min-height:40px;opacity:.7;display:inline-flex;align-items:center;justify-content:center}
     .addr{flex-wrap:wrap;gap:8px}
     .st{order:1}
     .aname{flex:1 1 50%;order:2}
     .del{order:3}
-    .anote{flex:1 1 100%;order:4;margin-left:0}
+    .anote{flex:1 1 100%;order:4;margin-left:0;font-size:16px}
   }
   @media print{
     .tabs,.foot,.del,.additem,.addrow{display:none}
@@ -368,17 +368,16 @@ const ST_LABEL = ["未办 Offen", "已提交 Eingereicht", "已确认 Bestätigt
 // ===================== state + 通用工具 =====================
 const LS = "umzug_v1";
 function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
-let state = load();
-state.b = state.b || {};    // 预算值 {key:{est,act}}
-state.t = state.t || {};    // 清单勾选 {key:true}
-state.sb = state.sb || {};  // 采购已买 {key:true}
-state.sv = state.sv || {};  // 采购实际价 {key:value}
-state.a = state.a || {};    // 地址三态 {key:0/1/2}
-state.an = state.an || {};  // 地址备注 {key:text}
-state.del = state.del || {};// 删除标记 {"sec:key":1}
-state.add = state.add || {};// 自定义项 {b:[{id,n,note}], t,s,a}
-["b","t","s","a"].forEach(k=> state.add[k] = state.add[k] || []);
-state.seq = state.seq || 0;
+// 结构规整：兜底类型（不只 falsy），防畸形/篡改的导入码导致渲染崩溃
+function normalize(s){
+  if(!s || typeof s!=="object" || Array.isArray(s)) s = {};
+  ["b","t","sb","sv","a","an","del"].forEach(k=>{ if(!s[k] || typeof s[k]!=="object" || Array.isArray(s[k])) s[k]={}; });
+  if(!s.add || typeof s.add!=="object" || Array.isArray(s.add)) s.add={};
+  ["b","t","s","a"].forEach(k=>{ if(!Array.isArray(s.add[k])) s.add[k]=[]; });
+  s.seq = Number.isInteger(s.seq) ? s.seq : 0;
+  return s;
+}
+let state = normalize(load());
 
 const eur = new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
 const fmt = n => n ? eur.format(n) : "–";
@@ -412,8 +411,8 @@ function budgetRow(key, it, custom){
   const noteHtml = it.note ? `<span class="note">${custom?esc(it.note):it.note}</span>` : "";
   const v = state.b[key] || {};
   return `<tr><td><span class="pname">${nm}</span>${delBtn("b",key)}${noteHtml}</td>`
-    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="est" value="${v.est ?? ""}" placeholder="0"><span class="eur">€</span></td>`
-    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="act" value="${v.act ?? ""}" placeholder="0"><span class="eur">€</span></td>`
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="est" value="${esc(v.est ?? "")}" placeholder="0"><span class="eur">€</span></td>`
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="act" value="${esc(v.act ?? "")}" placeholder="0"><span class="eur">€</span></td>`
     + `<td id="d_${key}" class="diff">–</td></tr>`;
 }
 function renderBudget(){
@@ -500,7 +499,7 @@ function shopRow(key, it, custom){
   return `<tr${on?' class="bought"':''}>`
     + `<td><label class="shopname"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span class="pname">${custom?esc(it.n):it.n}</span></label>${delBtn("s",key)}${metaSpan}</td>`
     + `<td>${qty}</td><td>${price}</td>`
-    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" value="${v}" placeholder="0"><span class="eur">€</span></td></tr>`;
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" value="${esc(v)}" placeholder="0"><span class="eur">€</span></td></tr>`;
 }
 function renderShop(){
   let h="";
@@ -622,6 +621,9 @@ document.addEventListener("click", e=>{
   const d=e.target.closest(".del");
   if(d){ e.preventDefault(); e.stopPropagation();
     const idx=d.dataset.del.indexOf(":"), sec=d.dataset.del.slice(0,idx), key=d.dataset.del.slice(idx+1);
+    const row=d.closest("tr,.addr,.chk"), nmEl=row&&row.querySelector(".pname,.aname,.ctext");
+    const nm=(nmEl?nmEl.textContent:"").trim()||"该项";
+    if(!confirm("删除「"+nm+"」？\n不影响其它项；需要时可在组末「＋ 新增」重新加回。")) return;
     state.del[sec+":"+key]=1; save(); rerender(sec); return;
   }
   const a=e.target.closest(".additem");
@@ -659,8 +661,7 @@ function importData(){
   const code=prompt("粘贴导出码（导入会覆盖本机当前数据）：");
   if(!code) return;
   try{
-    const obj=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
-    if(typeof obj!=="object" || !obj) throw 0;
+    const obj=normalize(JSON.parse(decodeURIComponent(escape(atob(code.trim())))));
     localStorage.setItem(LS, JSON.stringify(obj)); location.reload();
   }catch(e){ alert("❌ 导入码无效，请检查是否复制完整。"); }
 }
