@@ -77,11 +77,11 @@
   .phase h3{font-size:15px;margin:12px 0 8px}
   .chk{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line2);cursor:pointer}
   .chk:first-of-type{border-top:0}
-  .chk input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
-  .chk span{font-size:14.5px}
-  .chk.done span{color:var(--muted);text-decoration:line-through}
+  .chk input[type=checkbox]{margin-top:3px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+  .chk .ctext{font-size:14.5px;flex:1}
+  .chk.done .ctext{color:var(--muted);text-decoration:line-through}
   .shopname{display:inline-flex;gap:8px;align-items:center;cursor:pointer;font-weight:500}
-  .shopname input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex:0 0 auto}
+  .shopname input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex:0 0 auto}
   tr.bought td{opacity:.5} tr.bought .pname{text-decoration:line-through}
   .addr{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line2)}
   .addr:first-of-type{border-top:0}
@@ -93,6 +93,14 @@
   .anote{flex:0 1 150px;min-width:0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:13px;padding:3px 4px;outline:none}
   .anote:focus{border-bottom-color:var(--accent)}
   .prog{font-size:12px;color:var(--muted);font-weight:400}
+  /* 删除 / 新增 */
+  .del{appearance:none;border:0;background:none;color:var(--muted);font-size:17px;line-height:1;
+    cursor:pointer;padding:0 6px;opacity:.5;border-radius:5px;flex:0 0 auto}
+  .del:hover{color:var(--bad);opacity:1}
+  .additem{appearance:none;width:100%;border:1px dashed var(--line);background:none;color:var(--muted);
+    font:inherit;font-size:13px;padding:10px;border-radius:9px;cursor:pointer;margin-top:6px}
+  .additem:hover{border-color:var(--accent);color:var(--ink)}
+  .addrow td{background:none!important;border-top:0!important;padding:4px 12px 8px!important}
   .foot{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;align-items:center}
   .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
     font:inherit;font-size:13px;padding:8px 16px;border-radius:9px;cursor:pointer}
@@ -113,22 +121,26 @@
     tr.grp td{padding:6px 12px;font-size:15px}
     tr.grp td:nth-child(n+2){display:none}
     tr.tot{display:none}
+    tr.addrow td{padding:4px 12px 8px!important}
     tbody td{border:0;text-align:left;padding:2px 0;white-space:normal}
     tbody td:nth-child(n+2){white-space:normal}
-    #budgetBody tr:not(.grp):not(.tot) td:nth-child(2)::before{content:"预估 ";color:var(--muted);font-size:12px}
-    #budgetBody tr:not(.grp):not(.tot) td:nth-child(3)::before{content:"实际 ";color:var(--muted);font-size:12px}
-    #budgetBody tr:not(.grp):not(.tot) td:nth-child(4)::before{content:"差额 ";color:var(--muted);font-size:12px}
-    #shopBody tr:not(.grp):not(.tot) td:nth-child(2)::before{content:"数量 ";color:var(--muted);font-size:12px}
-    #shopBody tr:not(.grp):not(.tot) td:nth-child(3)::before{content:"估价 ";color:var(--muted);font-size:12px}
-    #shopBody tr:not(.grp):not(.tot) td:nth-child(4)::before{content:"实际 ";color:var(--muted);font-size:12px}
+    #budgetBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(2)::before{content:"预估 ";color:var(--muted);font-size:12px}
+    #budgetBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(3)::before{content:"实际 ";color:var(--muted);font-size:12px}
+    #budgetBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(4)::before{content:"差额 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(2)::before{content:"数量 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(3)::before{content:"估价 ";color:var(--muted);font-size:12px}
+    #shopBody tr:not(.grp):not(.tot):not(.addrow) td:nth-child(4)::before{content:"实际 ";color:var(--muted);font-size:12px}
     .num{width:auto;min-width:96px;font-size:16px}
+    .del{font-size:22px;padding:2px 10px;opacity:.7}
     .addr{flex-wrap:wrap;gap:8px}
     .st{order:1}
-    .aname{flex:1 1 55%;order:2}
-    .anote{flex:1 1 100%;order:3;margin-left:0}
+    .aname{flex:1 1 50%;order:2}
+    .del{order:3}
+    .anote{flex:1 1 100%;order:4;margin-left:0}
   }
   @media print{
-    .tabs,.foot{display:none} section[hidden]{display:block!important}
+    .tabs,.foot,.del,.additem,.addrow{display:none}
+    section[hidden]{display:block!important}
     body{padding:0} .num{border:0}
     .card,table,.phase{break-inside:avoid}
     .pt{font-size:18px;height:auto;margin:18px 0 10px;overflow:visible}
@@ -162,9 +174,7 @@
       <div class="card"><div class="k">余量 Rest</div><div class="v diff" id="ov_rest">–</div></div>
     </div>
     <table>
-      <thead><tr>
-        <th>项目 Posten</th><th>预估 €</th><th>实际 €</th><th>差额 €</th>
-      </tr></thead>
+      <thead><tr><th>项目 Posten</th><th>预估 €</th><th>实际 €</th><th>差额 €</th></tr></thead>
       <tbody id="budgetBody"></tbody>
     </table>
   </section>
@@ -195,7 +205,7 @@
       <div class="card"><div class="k">共 Gesamt</div><div class="v" id="addr_total">–</div></div>
     </div>
     <div id="addressBody"></div>
-    <p class="note" style="margin:10px 2px 0">点状态按钮循环：未办 → 已提交 → 已确认。右侧可记客户号 / 办理日（只存本地）。</p>
+    <p class="note" style="margin:10px 2px 0">点状态按钮循环：未办 → 已提交 → 已确认。右侧记客户号 / 办理日（只存本地）。每项可删，组末「＋ 新增」加自定义项。</p>
   </section>
 
   <div class="foot">
@@ -208,6 +218,7 @@
 </div>
 
 <script>
+// ===================== 数据（模板，公开无隐私）=====================
 const BUDGET = [
   {t:"① 押金・合同  Kaution & Vertrag", items:[
     {n:"新居押金 Kaution", note:"通常 3 个月 Kaltmiete，可用 Bürgschaft 替代现金"},
@@ -284,7 +295,7 @@ const TASKS = [
     "搬入后 14 天内办 Anmeldung，领 Meldebescheinigung",
     "Nachsendeauftrag 邮局转信（搬家前生效）",
     "找新的 Hausarzt 家庭医生",
-    "（各类地址变更见下方「📮 地址」板块）",
+    "（各类地址变更见「📮 地址」板块）",
   ]},
   {t:"④ 费用与抵税", items:[
     "留好所有搬家单据（公司 / 租车 / 纸箱 / 禁停区…）",
@@ -300,144 +311,6 @@ const TASKS = [
   ]},
 ];
 
-const LS = "umzug_v1";
-function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
-let state = load();
-state.b = state.b || {};
-state.t = state.t || {};
-
-const eur = new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
-const fmt = n => n ? eur.format(n) : "–";
-const toNum = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
-const $ = s => document.querySelector(s);
-const el = id => document.getElementById(id);
-
-let savedTimer;
-function flashSaved(){
-  const s = el("saved"); s.classList.add("show");
-  clearTimeout(savedTimer); savedTimer = setTimeout(()=>s.classList.remove("show"), 1200);
-}
-function save(){ localStorage.setItem(LS, JSON.stringify(state)); flashSaved(); }
-
-function paintDiff(node, n, active){
-  node.textContent = active ? fmt(n) : "–";
-  node.classList.remove("pos","neg");
-  if(active && n>0) node.classList.add("pos");   // 实际>预估 = 超支 = 红
-  else if(active && n<0) node.classList.add("neg"); // 省了 = 绿
-}
-
-function renderBudget(){
-  let h = "";
-  BUDGET.forEach((g, gi)=>{
-    h += `<tr class="grp"><td>${g.t}</td>`
-       + `<td id="se_${gi}">–</td><td id="sa_${gi}">–</td><td id="sd_${gi}" class="diff">–</td></tr>`;
-    g.items.forEach((it, ii)=>{
-      const key = gi+"_"+ii, v = state.b[key] || {};
-      const note = it.note ? `<span class="note">${it.note}</span>` : "";
-      h += `<tr><td><span class="pname">${it.n}</span>${note}</td>`
-         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="est" value="${v.est ?? ""}" placeholder="0"><span class="eur">€</span></td>`
-         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="act" value="${v.act ?? ""}" placeholder="0"><span class="eur">€</span></td>`
-         + `<td id="d_${key}" class="diff">–</td></tr>`;
-    });
-  });
-  h += `<tr class="tot"><td>合计 Gesamt</td>`
-     + `<td id="tot_est">–</td><td id="tot_act">–</td><td id="tot_diff" class="diff">–</td></tr>`;
-  el("budgetBody").innerHTML = h;
-}
-
-function compute(){
-  let totEst = 0, totAct = 0;
-  BUDGET.forEach((g, gi)=>{
-    let ge = 0, ga = 0;
-    g.items.forEach((it, ii)=>{
-      const key = gi+"_"+ii, v = state.b[key] || {};
-      const e = toNum(v.est), a = toNum(v.act);
-      ge += e; ga += a;
-      paintDiff(el("d_"+key), a-e, !!(e||a));
-    });
-    el("se_"+gi).textContent = fmt(ge);
-    el("sa_"+gi).textContent = fmt(ga);
-    paintDiff(el("sd_"+gi), ga-ge, !!(ge||ga));
-    totEst += ge; totAct += ga;
-  });
-  el("tot_est").textContent = fmt(totEst);
-  el("tot_act").textContent = fmt(totAct);
-  paintDiff(el("tot_diff"), totAct-totEst, !!(totEst||totAct));
-
-  el("ov_est").textContent = fmt(totEst);
-  el("ov_act").textContent = fmt(totAct);
-  paintDiff(el("ov_diff"), totAct-totEst, !!(totEst||totAct));
-
-  const limit = toNum(state.limit), rest = limit - totEst;
-  const r = el("ov_rest");
-  r.textContent = limit ? fmt(rest) : "–";
-  r.classList.remove("pos","neg");
-  if(limit && rest<0) r.classList.add("pos");      // 超预算 = 红
-  else if(limit && rest>0) r.classList.add("neg"); // 有余量 = 绿
-}
-
-function renderTasks(){
-  let h = "";
-  TASKS.forEach((p, pi)=>{
-    let rows = "";
-    p.items.forEach((txt, ii)=>{
-      const key = pi+"_"+ii, on = !!state.t[key];
-      rows += `<label class="chk${on?" done":""}"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span>${txt}</span></label>`;
-    });
-    h += `<div class="phase"><h3>${p.t} <span class="prog" id="pp_${pi}"></span></h3>${rows}</div>`;
-  });
-  el("tasksBody").innerHTML = h;
-  updateProgress();
-}
-
-function updateProgress(){
-  let done = 0, total = 0;
-  TASKS.forEach((p, pi)=>{
-    let pd = 0;
-    p.items.forEach((_, ii)=>{ total++; if(state.t[pi+"_"+ii]){ pd++; done++; } });
-    const e = el("pp_"+pi); if(e) e.textContent = `${pd}/${p.items.length}`;
-  });
-  el("allprog").textContent = `${done}/${total}`;
-}
-
-// ---- events ----
-el("budgetBody").addEventListener("input", e=>{
-  const inp = e.target.closest(".num"); if(!inp) return;
-  const key = inp.dataset.key, f = inp.dataset.f;
-  state.b[key] = state.b[key] || {};
-  state.b[key][f] = inp.value;
-  save(); compute();
-});
-el("limit").addEventListener("input", e=>{ state.limit = e.target.value; save(); compute(); });
-el("tasksBody").addEventListener("change", e=>{
-  const cb = e.target.closest("input[type=checkbox]"); if(!cb) return;
-  const key = cb.dataset.key;
-  if(cb.checked) state.t[key] = true; else delete state.t[key];
-  cb.closest(".chk").classList.toggle("done", cb.checked);
-  save(); updateProgress();
-});
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
-  t.classList.add("on");
-  const tab = t.dataset.tab;
-  el("budget").hidden = tab !== "budget";
-  el("tasks").hidden  = tab !== "tasks";
-}));
-el("reset").addEventListener("click", ()=>{
-  if(confirm("确定清空所有已填的预算和勾选？此操作不可撤销。")){
-    localStorage.removeItem(LS); location.reload();
-  }
-});
-
-// ---- init ----
-el("limit").value = state.limit || "";
-renderBudget();
-renderTasks();
-compute();
-</script>
-
-<script>
-// ===== 翻新采购 Einkaufsliste =====
 const SHOP = [
   {t:"洗手池修补 Waschbecken", items:[
     {n:"陶瓷裂痕修补套装", de:"Keramik-/Emaille-/Sanitär-Reparaturset", use:"修补裂痕、崩瓷、划痕", qty:"1 套", lo:7, hi:35, note:"Bauhaus Küche&Bad Set，用于 Keramik/Acryl/Email；高端到 ~60€"},
@@ -463,70 +336,6 @@ const SHOP = [
   ]},
 ];
 
-state.sb = state.sb || {};
-state.sv = state.sv || {};
-
-function renderShop(){
-  let h = "";
-  SHOP.forEach((g, gi)=>{
-    h += `<tr class="grp"><td>${g.t}</td><td></td><td id="sr_${gi}"></td><td></td></tr>`;
-    g.items.forEach((it, ii)=>{
-      const key = gi+"_"+ii, on = !!state.sb[key], v = state.sv[key] ?? "";
-      const meta = [it.de, it.use, it.note].filter(Boolean).join("　·　");
-      const price = it.lo===it.hi ? it.lo+" €" : it.lo+"–"+it.hi+" €";
-      h += `<tr${on?' class="bought"':''}>`
-         + `<td><label class="shopname"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span class="pname">${it.n}</span></label><span class="note">${meta}</span></td>`
-         + `<td>${it.qty}</td><td>${price}</td>`
-         + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" value="${v}" placeholder="0"><span class="eur">€</span></td></tr>`;
-    });
-  });
-  h += `<tr class="tot"><td>合计 Gesamt</td><td></td><td id="shop_totrange"></td><td id="shop_totact">–</td></tr>`;
-  el("shopBody").innerHTML = h;
-}
-
-function computeShop(){
-  let lo=0, hi=0, act=0, bought=0, total=0;
-  SHOP.forEach((g, gi)=>{
-    let glo=0, ghi=0;
-    g.items.forEach((it, ii)=>{
-      const key = gi+"_"+ii;
-      glo += it.lo; ghi += it.hi; lo += it.lo; hi += it.hi;
-      act += toNum(state.sv[key]);
-      total++; if(state.sb[key]) bought++;
-    });
-    const sr = el("sr_"+gi); if(sr) sr.textContent = glo+"–"+ghi+" €";
-  });
-  const range = lo+"–"+hi+" €";
-  el("shop_totrange").textContent = range;
-  el("shop_range").textContent = range;
-  el("shop_totact").textContent = act ? eur.format(act) : "–";
-  el("shop_act").textContent = act ? eur.format(act) : "–";
-  el("shop_count").textContent = bought+" / "+total;
-  el("shopprog").textContent = bought+"/"+total;
-}
-
-el("shopBody").addEventListener("change", e=>{
-  const cb = e.target.closest('input[type=checkbox]'); if(!cb) return;
-  const key = cb.dataset.key;
-  if(cb.checked) state.sb[key]=true; else delete state.sb[key];
-  const tr = cb.closest("tr"); if(tr) tr.classList.toggle("bought", cb.checked);
-  save(); computeShop();
-});
-el("shopBody").addEventListener("input", e=>{
-  const inp = e.target.closest(".num"); if(!inp) return;
-  state.sv[inp.dataset.key] = inp.value;
-  save(); computeShop();
-});
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
-  el("shop").hidden = t.dataset.tab !== "shop";
-}));
-
-renderShop();
-computeShop();
-</script>
-
-<script>
-// ===== 地址变更 Adressänderung =====
 const ADDRESS = [
   {t:"法定・合约 Behörden & Verträge", items:[
     {n:"报税局 Finanzamt", note:"自雇管辖可能转杜塞"},
@@ -555,86 +364,315 @@ const ADDRESS = [
   ]},
 ];
 const ST_LABEL = ["未办 Offen", "已提交 Eingereicht", "已确认 Bestätigt"];
-const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-state.a = state.a || {};
-state.an = state.an || {};
+// ===================== state + 通用工具 =====================
+const LS = "umzug_v1";
+function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
+let state = load();
+state.b = state.b || {};    // 预算值 {key:{est,act}}
+state.t = state.t || {};    // 清单勾选 {key:true}
+state.sb = state.sb || {};  // 采购已买 {key:true}
+state.sv = state.sv || {};  // 采购实际价 {key:value}
+state.a = state.a || {};    // 地址三态 {key:0/1/2}
+state.an = state.an || {};  // 地址备注 {key:text}
+state.del = state.del || {};// 删除标记 {"sec:key":1}
+state.add = state.add || {};// 自定义项 {b:[{id,n,note}], t,s,a}
+["b","t","s","a"].forEach(k=> state.add[k] = state.add[k] || []);
+state.seq = state.seq || 0;
 
-function renderAddress(){
+const eur = new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
+const fmt = n => n ? eur.format(n) : "–";
+const toNum = v => { const x = parseFloat(v); return isFinite(x) ? x : 0; };
+const el = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const isDel = (sec,key) => !!state.del[sec+":"+key];
+const delBtn = (sec,key) => `<button class="del" data-del="${sec}:${key}" title="删除" aria-label="删除">×</button>`;
+const addBtn = sec => `<button class="additem" data-add="${sec}">＋ 新增项目</button>`;
+
+let savedTimer;
+function flashSaved(){
+  const s = el("saved"); s.classList.add("show");
+  clearTimeout(savedTimer); savedTimer = setTimeout(()=>s.classList.remove("show"), 1200);
+}
+function save(){ localStorage.setItem(LS, JSON.stringify(state)); flashSaved(); }
+function paintDiff(node, n, active){
+  if(!node) return;
+  node.textContent = active ? fmt(n) : "–";
+  node.classList.remove("pos","neg");
+  if(active && n>0) node.classList.add("pos");
+  else if(active && n<0) node.classList.add("neg");
+}
+
+// ===================== 预算 =====================
+function grpRow(title, a, b, c){
+  return `<tr class="grp"><td>${title}</td><td id="${a}">–</td><td id="${b}">–</td><td id="${c}" class="diff">–</td></tr>`;
+}
+function budgetRow(key, it, custom){
+  const nm = custom ? esc(it.n) : it.n;
+  const noteHtml = it.note ? `<span class="note">${custom?esc(it.note):it.note}</span>` : "";
+  const v = state.b[key] || {};
+  return `<tr><td><span class="pname">${nm}</span>${delBtn("b",key)}${noteHtml}</td>`
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="est" value="${v.est ?? ""}" placeholder="0"><span class="eur">€</span></td>`
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" data-f="act" value="${v.act ?? ""}" placeholder="0"><span class="eur">€</span></td>`
+    + `<td id="d_${key}" class="diff">–</td></tr>`;
+}
+function renderBudget(){
   let h = "";
+  BUDGET.forEach((g, gi)=>{
+    h += grpRow(g.t, "se_"+gi, "sa_"+gi, "sd_"+gi);
+    g.items.forEach((it, ii)=>{ const k=gi+"_"+ii; if(!isDel("b",k)) h += budgetRow(k, it, false); });
+  });
+  h += grpRow("➕ 自定义 Eigene", "se_c", "sa_c", "sd_c");
+  state.add.b.forEach(it=>{ if(!isDel("b",it.id)) h += budgetRow(it.id, it, true); });
+  h += `<tr class="addrow"><td colspan="4">${addBtn("b")}</td></tr>`;
+  h += `<tr class="tot"><td>合计 Gesamt</td><td id="tot_est">–</td><td id="tot_act">–</td><td id="tot_diff" class="diff">–</td></tr>`;
+  el("budgetBody").innerHTML = h;
+}
+function compute(){
+  let totEst=0, totAct=0;
+  const addOne = (key)=>{
+    const v=state.b[key]||{}, e=toNum(v.est), a=toNum(v.act);
+    paintDiff(el("d_"+key), a-e, !!(e||a));
+    return [e,a];
+  };
+  BUDGET.forEach((g, gi)=>{
+    let ge=0, ga=0;
+    g.items.forEach((it, ii)=>{ const k=gi+"_"+ii; if(isDel("b",k))return; const r=addOne(k); ge+=r[0]; ga+=r[1]; });
+    el("se_"+gi).textContent=fmt(ge); el("sa_"+gi).textContent=fmt(ga);
+    paintDiff(el("sd_"+gi), ga-ge, !!(ge||ga));
+    totEst+=ge; totAct+=ga;
+  });
+  let ce=0, ca=0;
+  state.add.b.forEach(it=>{ if(isDel("b",it.id))return; const r=addOne(it.id); ce+=r[0]; ca+=r[1]; });
+  if(el("se_c")) el("se_c").textContent=fmt(ce);
+  if(el("sa_c")) el("sa_c").textContent=fmt(ca);
+  paintDiff(el("sd_c"), ca-ce, !!(ce||ca));
+  totEst+=ce; totAct+=ca;
+  el("tot_est").textContent=fmt(totEst); el("tot_act").textContent=fmt(totAct);
+  paintDiff(el("tot_diff"), totAct-totEst, !!(totEst||totAct));
+  el("ov_est").textContent=fmt(totEst); el("ov_act").textContent=fmt(totAct);
+  paintDiff(el("ov_diff"), totAct-totEst, !!(totEst||totAct));
+  const limit=toNum(state.limit), rest=limit-totEst, r=el("ov_rest");
+  r.textContent=limit?fmt(rest):"–"; r.classList.remove("pos","neg");
+  if(limit&&rest<0) r.classList.add("pos"); else if(limit&&rest>0) r.classList.add("neg");
+}
+
+// ===================== 清单 =====================
+function taskRow(key, txt, custom){
+  const on = !!state.t[key];
+  return `<label class="chk${on?" done":""}"><input type="checkbox" data-key="${key}" ${on?"checked":""}>`
+    + `<span class="ctext">${custom?esc(txt):txt}</span>${delBtn("t",key)}</label>`;
+}
+function renderTasks(){
+  let h="";
+  TASKS.forEach((p, pi)=>{
+    let rows="";
+    p.items.forEach((txt, ii)=>{ const k=pi+"_"+ii; if(!isDel("t",k)) rows += taskRow(k, txt, false); });
+    h += `<div class="phase"><h3>${p.t} <span class="prog" id="pp_${pi}"></span></h3>${rows}</div>`;
+  });
+  let crows="";
+  state.add.t.forEach(it=>{ if(!isDel("t",it.id)) crows += taskRow(it.id, it.n, true); });
+  h += `<div class="phase"><h3>➕ 自定义 Eigene <span class="prog" id="pp_c"></span></h3>${crows}${addBtn("t")}</div>`;
+  el("tasksBody").innerHTML = h;
+  updateProgress();
+}
+function updateProgress(){
+  let done=0, total=0;
+  TASKS.forEach((p, pi)=>{
+    let pd=0, pt=0;
+    p.items.forEach((_, ii)=>{ const k=pi+"_"+ii; if(isDel("t",k))return; pt++; total++; if(state.t[k]){pd++;done++;} });
+    const e=el("pp_"+pi); if(e) e.textContent=`${pd}/${pt}`;
+  });
+  let cd=0, ct=0;
+  state.add.t.forEach(it=>{ if(isDel("t",it.id))return; ct++; total++; if(state.t[it.id]){cd++;done++;} });
+  if(el("pp_c")) el("pp_c").textContent=`${cd}/${ct}`;
+  el("allprog").textContent=`${done}/${total}`;
+}
+
+// ===================== 翻新采购 =====================
+function shopRow(key, it, custom){
+  const on=!!state.sb[key], v=state.sv[key]??"";
+  const metaArr = custom ? [it.note] : [it.de, it.use, it.note];
+  const meta = metaArr.filter(Boolean).map(x=>custom?esc(x):x).join("　·　");
+  const metaSpan = meta ? `<span class="note">${meta}</span>` : "";
+  const price = (it.lo!=null) ? (it.lo===it.hi?it.lo+" €":it.lo+"–"+it.hi+" €") : "—";
+  const qty = it.qty ? (custom?esc(it.qty):it.qty) : "—";
+  return `<tr${on?' class="bought"':''}>`
+    + `<td><label class="shopname"><input type="checkbox" data-key="${key}" ${on?"checked":""}><span class="pname">${custom?esc(it.n):it.n}</span></label>${delBtn("s",key)}${metaSpan}</td>`
+    + `<td>${qty}</td><td>${price}</td>`
+    + `<td><input class="num" type="number" inputmode="decimal" data-key="${key}" value="${v}" placeholder="0"><span class="eur">€</span></td></tr>`;
+}
+function renderShop(){
+  let h="";
+  SHOP.forEach((g, gi)=>{
+    h += `<tr class="grp"><td>${g.t}</td><td></td><td id="sr_${gi}"></td><td></td></tr>`;
+    g.items.forEach((it, ii)=>{ const k=gi+"_"+ii; if(!isDel("s",k)) h += shopRow(k, it, false); });
+  });
+  h += `<tr class="grp"><td>➕ 自定义 Eigene</td><td></td><td id="sr_c"></td><td></td></tr>`;
+  state.add.s.forEach(it=>{ if(!isDel("s",it.id)) h += shopRow(it.id, it, true); });
+  h += `<tr class="addrow"><td colspan="4">${addBtn("s")}</td></tr>`;
+  h += `<tr class="tot"><td>合计 Gesamt</td><td></td><td id="shop_totrange"></td><td id="shop_totact">–</td></tr>`;
+  el("shopBody").innerHTML = h;
+}
+function computeShop(){
+  let lo=0, hi=0, act=0, bought=0, total=0;
+  SHOP.forEach((g, gi)=>{
+    let glo=0, ghi=0;
+    g.items.forEach((it, ii)=>{ const k=gi+"_"+ii; if(isDel("s",k))return;
+      glo+=it.lo; ghi+=it.hi; lo+=it.lo; hi+=it.hi; act+=toNum(state.sv[k]); total++; if(state.sb[k]) bought++; });
+    const sr=el("sr_"+gi); if(sr) sr.textContent=glo+"–"+ghi+" €";
+  });
+  state.add.s.forEach(it=>{ if(isDel("s",it.id))return; act+=toNum(state.sv[it.id]); total++; if(state.sb[it.id]) bought++; });
+  if(el("sr_c")) el("sr_c").textContent="";
+  const range=lo+"–"+hi+" €";
+  el("shop_totrange").textContent=range; el("shop_range").textContent=range;
+  el("shop_totact").textContent= act?eur.format(act):"–";
+  el("shop_act").textContent= act?eur.format(act):"–";
+  el("shop_count").textContent= bought+" / "+total;
+  el("shopprog").textContent= bought+"/"+total;
+}
+
+// ===================== 地址变更 =====================
+function addrRow(key, it, custom){
+  const s=state.a[key]||0, nt=state.an[key]??"";
+  const noteHtml = it.note ? `<span class="note">${custom?esc(it.note):it.note}</span>` : "";
+  return `<div class="addr"><button class="st st${s}" data-key="${key}">${ST_LABEL[s]}</button>`
+    + `<span class="aname">${custom?esc(it.n):it.n}${noteHtml}</span>${delBtn("a",key)}`
+    + `<input class="anote" data-key="${key}" value="${esc(nt)}" placeholder="客户号 / 办理日…"></div>`;
+}
+function renderAddress(){
+  let h="";
   ADDRESS.forEach((g, gi)=>{
-    let rows = "";
-    g.items.forEach((it, ii)=>{
-      const key = gi+"_"+ii, s = state.a[key] || 0, nt = state.an[key] ?? "";
-      const note = it.note ? `<span class="note">${it.note}</span>` : "";
-      rows += `<div class="addr"><button class="st st${s}" data-key="${key}">${ST_LABEL[s]}</button>`
-            + `<span class="aname">${it.n}${note}</span>`
-            + `<input class="anote" data-key="${key}" value="${esc(nt)}" placeholder="客户号 / 办理日…"></div>`;
-    });
+    let rows="";
+    g.items.forEach((it, ii)=>{ const k=gi+"_"+ii; if(!isDel("a",k)) rows += addrRow(k, it, false); });
     h += `<div class="phase"><h3>${g.t} <span class="prog" id="ap_${gi}"></span></h3>${rows}</div>`;
   });
+  let crows="";
+  state.add.a.forEach(it=>{ if(!isDel("a",it.id)) crows += addrRow(it.id, it, true); });
+  h += `<div class="phase"><h3>➕ 自定义 Eigene <span class="prog" id="ap_c"></span></h3>${crows}${addBtn("a")}</div>`;
   el("addressBody").innerHTML = h;
 }
-
 function computeAddress(){
   let done=0, sent=0, total=0;
+  const tally = (key)=>{ const s=state.a[key]||0; total++; if(s===2)done++; else if(s===1)sent++; return s===2?1:0; };
   ADDRESS.forEach((g, gi)=>{
-    let gd=0;
-    g.items.forEach((_, ii)=>{
-      const s = state.a[gi+"_"+ii] || 0;
-      total++; if(s===2){done++;gd++;} else if(s===1) sent++;
-    });
-    const e = el("ap_"+gi); if(e) e.textContent = gd+"/"+g.items.length;
+    let gd=0, gt=0;
+    g.items.forEach((_, ii)=>{ const k=gi+"_"+ii; if(isDel("a",k))return; gt++; gd+=tally(k); });
+    const e=el("ap_"+gi); if(e) e.textContent=gd+"/"+gt;
   });
-  el("addr_done").textContent = done;
-  el("addr_sent").textContent = sent;
-  el("addr_total").textContent = total;
-  el("addrprog").textContent = done+"/"+total;
+  let cd=0, ct=0;
+  state.add.a.forEach(it=>{ if(isDel("a",it.id))return; ct++; cd+=tally(it.id); });
+  if(el("ap_c")) el("ap_c").textContent=cd+"/"+ct;
+  el("addr_done").textContent=done; el("addr_sent").textContent=sent; el("addr_total").textContent=total;
+  el("addrprog").textContent=done+"/"+total;
 }
 
+// ===================== 事件 =====================
+function rerender(sec){
+  if(sec==="b"){ renderBudget(); compute(); }
+  else if(sec==="t"){ renderTasks(); }
+  else if(sec==="s"){ renderShop(); computeShop(); }
+  else if(sec==="a"){ renderAddress(); computeAddress(); }
+}
+
+el("budgetBody").addEventListener("input", e=>{
+  const inp=e.target.closest(".num"); if(!inp) return;
+  const key=inp.dataset.key, f=inp.dataset.f;
+  state.b[key]=state.b[key]||{}; state.b[key][f]=inp.value;
+  save(); compute();
+});
+el("limit").addEventListener("input", e=>{ state.limit=e.target.value; save(); compute(); });
+
+el("tasksBody").addEventListener("change", e=>{
+  const cb=e.target.closest("input[type=checkbox]"); if(!cb) return;
+  const key=cb.dataset.key;
+  if(cb.checked) state.t[key]=true; else delete state.t[key];
+  cb.closest(".chk").classList.toggle("done", cb.checked);
+  save(); updateProgress();
+});
+
+el("shopBody").addEventListener("change", e=>{
+  const cb=e.target.closest('input[type=checkbox]'); if(!cb) return;
+  const key=cb.dataset.key;
+  if(cb.checked) state.sb[key]=true; else delete state.sb[key];
+  const tr=cb.closest("tr"); if(tr) tr.classList.toggle("bought", cb.checked);
+  save(); computeShop();
+});
+el("shopBody").addEventListener("input", e=>{
+  const inp=e.target.closest(".num"); if(!inp) return;
+  state.sv[inp.dataset.key]=inp.value; save(); computeShop();
+});
+
 el("addressBody").addEventListener("click", e=>{
-  const b = e.target.closest(".st"); if(!b) return;
-  const key = b.dataset.key, s = ((state.a[key]||0)+1)%3;
+  const b=e.target.closest(".st"); if(!b) return;
+  const key=b.dataset.key, s=((state.a[key]||0)+1)%3;
   if(s) state.a[key]=s; else delete state.a[key];
-  b.className = "st st"+s; b.textContent = ST_LABEL[s];
+  b.className="st st"+s; b.textContent=ST_LABEL[s];
   save(); computeAddress();
 });
 el("addressBody").addEventListener("input", e=>{
-  const inp = e.target.closest(".anote"); if(!inp) return;
-  const key = inp.dataset.key;
+  const inp=e.target.closest(".anote"); if(!inp) return;
+  const key=inp.dataset.key;
   if(inp.value) state.an[key]=inp.value; else delete state.an[key];
   save();
 });
+
+// 统一：删除 / 新增（事件委托到 document）
+document.addEventListener("click", e=>{
+  const d=e.target.closest(".del");
+  if(d){ e.preventDefault(); e.stopPropagation();
+    const idx=d.dataset.del.indexOf(":"), sec=d.dataset.del.slice(0,idx), key=d.dataset.del.slice(idx+1);
+    state.del[sec+":"+key]=1; save(); rerender(sec); return;
+  }
+  const a=e.target.closest(".additem");
+  if(a){ e.preventDefault();
+    const sec=a.dataset.add, name=(prompt("新增项目名称：")||"").trim();
+    if(!name) return;
+    state.seq++; state.add[sec].push({id:"x"+state.seq, n:name});
+    save(); rerender(sec); return;
+  }
+});
+
+// 标签切换
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
-  el("address").hidden = t.dataset.tab !== "address";
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on");
+  const tab=t.dataset.tab;
+  ["budget","tasks","shop","address"].forEach(s=> el(s).hidden = s!==tab);
 }));
 
-renderAddress();
-computeAddress();
-
-// ===== 导出 / 导入（跨设备同步 + 备份）=====
+// 清空 / 导出 / 导入
+el("reset").addEventListener("click", ()=>{
+  if(confirm("确定清空所有已填数据 + 你新增/删除的项目？此操作不可撤销。")){
+    localStorage.removeItem(LS); location.reload();
+  }
+});
 function exportData(){
-  const code = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  const code=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(code)
       .then(()=>alert("✅ 导出码已复制到剪贴板（"+code.length+" 字符）。\n粘到另一台设备点「导入」，或发给自己 / 存进备份。"))
       .catch(()=>prompt("复制下面的导出码：", code));
-  } else {
-    prompt("复制下面的导出码：", code);
-  }
+  } else { prompt("复制下面的导出码：", code); }
 }
 function importData(){
-  const code = prompt("粘贴导出码（导入会覆盖本机当前数据）：");
+  const code=prompt("粘贴导出码（导入会覆盖本机当前数据）：");
   if(!code) return;
   try{
-    const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
-    if(typeof obj !== "object" || !obj) throw 0;
-    localStorage.setItem(LS, JSON.stringify(obj));
-    location.reload();
+    const obj=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+    if(typeof obj!=="object" || !obj) throw 0;
+    localStorage.setItem(LS, JSON.stringify(obj)); location.reload();
   }catch(e){ alert("❌ 导入码无效，请检查是否复制完整。"); }
 }
 el("exportBtn").addEventListener("click", exportData);
 el("importBtn").addEventListener("click", importData);
+
+// ===================== 初始化 =====================
+el("limit").value = state.limit || "";
+renderBudget(); compute();
+renderTasks();
+renderShop(); computeShop();
+renderAddress(); computeAddress();
 </script>
 </body>
 </html>
